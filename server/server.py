@@ -27,9 +27,11 @@ def members():
 def receive_url_from_frontend():
     data = request.get_json()
     url = data.get('url')
+    
     results = extract_article_info(url)
 
-
+    print(url)
+    
     map_view(results[-1])
     locations_list = list(results[-1].items())
 
