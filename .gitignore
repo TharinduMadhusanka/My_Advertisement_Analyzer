@@ -131,3 +131,4 @@ dist
 
 server/venv/
 server/tmp/
+server/templates/geocoded_map.html
