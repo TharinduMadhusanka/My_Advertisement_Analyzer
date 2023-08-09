@@ -1,11 +1,11 @@
 import React from "react";
 import "./App.css";
-import ResponsiveAppBar from "./components/appBar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import About from "./pages/about";
 import Analyze from "./pages/analyze";
 import InputURL from "./pages/inputURL";
+import Input_Image_URL from "./pages/inputIMGURL";
 
 function App() {
   return (
@@ -16,6 +16,7 @@ function App() {
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/inputURL" element={<InputURL />} />
           <Route path="/about" element={<About />} />
+          <Route path="/inputIMGURL" element={<Input_Image_URL />} />
           {/* <Route path="*" element={<NoPage />} /> */}
         </Routes>
       </div>

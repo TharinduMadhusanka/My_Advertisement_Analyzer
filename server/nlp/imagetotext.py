@@ -65,7 +65,7 @@ def ocr_image_url(image_url, mode):
             # Perform NER
             return perform_ner(ocr_text)
         else:
-            return False
+            return ["No text found"]
 
     except Exception as e:
         print(f"Error during OCR from URL: {e}")

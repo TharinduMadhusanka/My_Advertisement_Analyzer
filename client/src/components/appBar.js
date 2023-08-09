@@ -18,7 +18,6 @@ import AdbIcon from "@mui/icons-material/Adb";
 const pages = [
   { label: "Home", path: "/" },
   { label: "Analyze", path: "/analyze" },
-  { label: "InputURL", path: "/inputURL" },
   { label: "About", path: "/about" },
 ];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -143,7 +142,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                {/* <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" /> */}
               </IconButton>
             </Tooltip>
             <Menu
