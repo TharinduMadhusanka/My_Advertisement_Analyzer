@@ -1,6 +1,7 @@
 from newspaper import Article
 
 from nlp.findlocations import extract_addresses_with_geocoding
+from nlp.findlocations_new import extract_locations
 from nlp.findcatogory import identify_catogory
 from nlp.findprice import identify_price
 from nlp.findcontacts import extract_contacts
@@ -33,7 +34,8 @@ def extract_article_info(url):
     keywords = article.keywords
 
 
-    locations = extract_addresses_with_geocoding(text)
+    # locations = extract_addresses_with_geocoding(text)
+    locations = extract_locations(text)
     catogory = identify_catogory(text)
     price = identify_price(text)
     contact = extract_contacts(text)

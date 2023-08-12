@@ -26,3 +26,12 @@ def identify_price(text):
     if len(prices) == 0:
         return "No price found"
     return prices[0]
+
+
+# ==================Test==================
+
+# price = identify_price('''District - Colombo
+# City - Bokundara
+# Price : Rs.33,000,000''')
+
+# print(price)

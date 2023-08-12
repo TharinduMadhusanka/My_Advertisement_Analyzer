@@ -13,6 +13,8 @@ function InputURL() {
     e.preventDefault();
     setLoading(true);
 
+    setBackendResponse([]); // Clear previous results
+
     // Send URL to backend
     fetch("/sendurl", {
       method: "POST",
@@ -60,13 +62,13 @@ function InputURL() {
         </Button>
       </form>
       <br />
-         
-          {loading && (
-              <div>
-                  <p>Analyzing...</p>
-                  <LinearProgress />
-              </div>
-            )}
+
+      {loading && (
+        <div>
+          <p>Analyzing...</p>
+          <LinearProgress />
+        </div>
+      )}
 
       {backendResponse.length > 0 && (
         <div>
@@ -75,11 +77,11 @@ function InputURL() {
             <p>Title: {backendResponse[0]}</p>
             <p>Text: {backendResponse[1]}</p>
             <p>Summary: {backendResponse[2]}</p>
-            <p>Keywords: {backendResponse[3]}</p>
+            <p>Keywords: {backendResponse[3].join(", ")}</p>
             <p>Category: {backendResponse[4]}</p>
             <p>Price: {backendResponse[5]}</p>
             <p>Contact: {backendResponse[6]}</p>
-            <p>Locations: {backendResponse[7]}</p>
+            <p>Locations: {backendResponse[7].join(", ")}</p>
           </div>
         </div>
       )}

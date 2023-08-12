@@ -32,17 +32,17 @@ def receive_url_from_frontend():
 
     print(url)
     
-    map_view(results[-1])
-    locations_list = list(results[-1].items())
+    # map_view(results[-1])
+    # locations_list = list(results[-1].items())
 
-    results = list(results)
-    del results[-1]
-    results.append(locations_list)
+    # results = list(results)
+    # del results[-1]
+    # results.append(locations_list)
 
-    add_to_db(results)
+    # add_to_db(results)
     
-    for _ in results:
-        print(_, "\n\n")
+    # for _ in results:
+    #     print(_, "\n\n")
 
 
     return jsonify({'results': results})

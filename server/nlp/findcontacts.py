@@ -21,3 +21,7 @@ def extract_contacts(text):
     if len(phone_numbers) == 0:
         return "No contacts found"
     return phone_numbers
+
+
+# test
+# print(extract_contacts("My number is +94 77 123 4567 and my friend's number is 077 123 4567 , HOMAGAMA, Pitipana, Mawathgama Road, 2 roomed, living, bathroom, kitchen with pantry, parking space for one vehicle, parapet wall surrounded, ground floor. Rs.30,000/- 0777607539"))
