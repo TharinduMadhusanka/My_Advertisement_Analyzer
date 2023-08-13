@@ -18,6 +18,7 @@ def extract_locations(given_text):
 
     matching_cities = set()
 
+    # To capitalize the first letter of each word
     given_text = given_text.title()
 
     for _, city in automaton.iter(given_text):

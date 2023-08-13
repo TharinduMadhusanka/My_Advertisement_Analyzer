@@ -44,7 +44,6 @@ def receive_url_from_frontend():
     # for _ in results:
     #     print(_, "\n\n")
 
-
     return jsonify({'results': results})
 
 
