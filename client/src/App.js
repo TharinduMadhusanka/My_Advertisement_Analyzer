@@ -6,6 +6,9 @@ import About from "./pages/about";
 import Analyze from "./pages/analyze";
 import InputURL from "./pages/inputURL";
 import Input_Image_URL from "./pages/inputIMGURL";
+import LoginPage from "./pages/loginPage";
+import RegisterPage from "./pages/registerPage";
+import LandingPage from "./pages/landingPage";
 
 function App() {
   return (
@@ -17,6 +20,10 @@ function App() {
           <Route path="/inputURL" element={<InputURL />} />
           <Route path="/about" element={<About />} />
           <Route path="/inputIMGURL" element={<Input_Image_URL />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/landing" element={<LandingPage />} />
+
           {/* <Route path="*" element={<NoPage />} /> */}
         </Routes>
       </div>
