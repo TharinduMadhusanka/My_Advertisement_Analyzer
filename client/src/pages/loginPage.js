@@ -27,7 +27,8 @@ export default function LoginPage() {
         .catch(function (error) {
           console.log(error, "error");
           if (error.response.status === 401) {
-            alert("Invalid credentials");
+            // alert("Invalid credentials");
+            alert(error.response.data.error);
           }
         });
     }

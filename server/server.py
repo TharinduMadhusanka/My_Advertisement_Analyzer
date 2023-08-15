@@ -1,5 +1,5 @@
 import os
-from database import add_to_db
+# from database import add_to_db
 from flask import Flask, request, jsonify, render_template
 from nlp.webScraper import extract_article_info
 from nlp.imagetotext import run_ocr, ocr_image_url
@@ -7,16 +7,39 @@ from nlp.pdftotext import run_pdf
 import folium
 from flask_pymongo import PyMongo
 
+
+from flask_pymongo import PyMongo
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+from pymongo import MongoClient
+
+
 app = Flask(__name__)
 
+# app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
+# mongo = PyMongo(app)
+
+# # Define the upload folder
+# UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# -----------------------------------------------------------------------
+# original code
+# Configurations
 app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
+app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
+
+# Extensions
 mongo = PyMongo(app)
+bcrypt = Bcrypt(app)
+CORS(app, supports_credentials=True)
 
-# Define the upload folder
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# User Authentication
+mongo = MongoClient(app.config["MONGO_URI"])
+db_mongo = mongo.myDatabase
 
+# ----------------------------------------------------------------
 
 @app.route("/members")
 def members():
@@ -112,5 +135,50 @@ def upload_pdf():
         return jsonify({"error": "Error processing PDF"}), 500
 
 
+# User Authentication_______________________________________________________________________________________        
+
+
+@app.route("/signup", methods=["POST"])
+def signup():
+    email = request.json["email"]
+    password = request.json["password"]
+
+    print("------------------signup code is called------------------")
+    print(email, password)
+
+    user_exists = db_mongo.users.find_one({"email": email})
+    # print(user_exists)
+    if user_exists:
+        return jsonify({"error": "Email already exists"}) , 409
+
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    new_user = {"email": email, "password": hashed_password}
+    db_mongo.users.insert_one(new_user)
+
+    return jsonify({
+        "email": new_user["email"]
+    })
+
+@app.route("/login", methods=["POST"])
+def login_user():
+    email = request.json["email"]
+    password = request.json["password"]
+
+    print("------------------login code is called------------------")
+    print("email: ",email,"\n","Pasword: ", password,"\n")
+
+    user = db_mongo.users.find_one({"email": email})
+
+    if user is None:
+        return jsonify({"error": "Invalid User Name"}), 401
+
+    if not bcrypt.check_password_hash(user["password"], password):
+        return jsonify({"error": "Incorrect Password"}), 401
+
+    return jsonify({
+        "email": user["email"]
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)
+

@@ -9,6 +9,12 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const registerUser = () => {
+    // error handling for empty fields
+    if (email === "" || password === "") {
+      alert("Please fill all the fields");
+      return;
+    }
+
     axios
       .post("http://127.0.0.1:5000/signup", {
         email: email,
@@ -51,6 +57,7 @@ export default function RegisterPage() {
                     id="form3Example3"
                     className="form-control form-control-lg"
                     placeholder="Enter a valid email address"
+                    required
                   />
                   <label className="form-label" for="form3Example3">
                     Email address
@@ -65,6 +72,7 @@ export default function RegisterPage() {
                     id="form3Example4"
                     className="form-control form-control-lg"
                     placeholder="Enter password"
+                    required
                   />
                   <label className="form-label" for="form3Example4">
                     Password
