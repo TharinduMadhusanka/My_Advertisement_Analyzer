@@ -14,6 +14,12 @@ from flask_cors import CORS
 from pymongo import MongoClient
 
 
+from sendmail import sendMail
+from datetime import datetime, timedelta
+import random
+
+verification_codes = {}
+
 app = Flask(__name__)
 
 # app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
@@ -28,7 +34,8 @@ app = Flask(__name__)
 # original code
 # Configurations
 app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
-app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
+app.config["UPLOAD_FOLDER"] = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "tmp")
 
 # Extensions
 mongo = PyMongo(app)
@@ -41,6 +48,7 @@ db_mongo = mongo.myDatabase
 
 # ----------------------------------------------------------------
 
+
 @app.route("/members")
 def members():
     return jsonify({"members": ["Anthony", "Jason", "Karl"]})
@@ -50,11 +58,11 @@ def members():
 def receive_url_from_frontend():
     data = request.get_json()
     url = data.get('url')
-    
+
     results = extract_article_info(url)
 
     print(url)
-    
+
     # map_view(results[-1])
     # locations_list = list(results[-1].items())
 
@@ -63,7 +71,7 @@ def receive_url_from_frontend():
     # results.append(locations_list)
 
     # add_to_db(results)
-    
+
     # for _ in results:
     #     print(_, "\n\n")
 
@@ -135,7 +143,7 @@ def upload_pdf():
         return jsonify({"error": "Error processing PDF"}), 500
 
 
-# User Authentication_______________________________________________________________________________________        
+# User Authentication_______________________________________________________________________________________
 
 
 @app.route("/signup", methods=["POST"])
@@ -149,7 +157,15 @@ def signup():
     user_exists = db_mongo.users.find_one({"email": email})
     # print(user_exists)
     if user_exists:
-        return jsonify({"error": "Email already exists"}) , 409
+        return jsonify({"error": "Email already exists"}), 409
+
+    verification_code = random.randint(100000, 999999)  # generate_random_code()  # Generate a verification code
+    expiration_time = datetime.now() + timedelta(minutes=1)
+    verification_codes[email] = {
+        "code": verification_code, "expiration_time": expiration_time}
+
+    print("verification code: ", verification_code)
+    # sendMail(email, verification_code)
 
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = {"email": email, "password": hashed_password}
@@ -159,13 +175,42 @@ def signup():
         "email": new_user["email"]
     })
 
+
+@app.route("/verify", methods=["POST"])
+def verify():
+    email = request.json["email"]
+    user_code = request.json["verificationCode"]
+
+    if email in verification_codes:
+        stored_code = verification_codes[email]["code"]
+        expiration_time = verification_codes[email]["expiration_time"]
+
+
+        print(datetime.now() , expiration_time)
+
+        if datetime.now() < expiration_time and int(user_code.strip()) == stored_code:
+            del verification_codes[email]  # Remove the used verification code
+
+            return jsonify({"success": True})
+        else:
+            # detete the user from the database
+            del verification_codes[email]
+            db_mongo.users.delete_one({"email": email})
+            return jsonify({"success": False})
+    else:
+        del verification_codes[email]
+        # detete the user from the database
+        db_mongo.users.delete_one({"email": email})
+        return jsonify({"success": False})
+
+
 @app.route("/login", methods=["POST"])
 def login_user():
     email = request.json["email"]
     password = request.json["password"]
 
     print("------------------login code is called------------------")
-    print("email: ",email,"\n","Pasword: ", password,"\n")
+    print("email: ", email, "\n", "Pasword: ", password, "\n")
 
     user = db_mongo.users.find_one({"email": email})
 
@@ -179,6 +224,6 @@ def login_user():
         "email": user["email"]
     })
 
+
 if __name__ == "__main__":
     app.run(debug=True)
-
