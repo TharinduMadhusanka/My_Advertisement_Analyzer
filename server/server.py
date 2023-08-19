@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 import random
 
 verification_codes = {}
+want_send_email = False
 
 app = Flask(__name__)
 
@@ -165,7 +166,9 @@ def signup():
         "code": verification_code, "expiration_time": expiration_time}
 
     print("verification code: ", verification_code)
-    # sendMail(email, verification_code)
+
+    if (want_send_email):
+        sendMail(email, verification_code)
 
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = {"email": email, "password": hashed_password}
@@ -180,6 +183,8 @@ def signup():
 def verify():
     email = request.json["email"]
     user_code = request.json["verificationCode"]
+    cancel = request.json.get("cancel", False)  # Check for the cancel flag
+
 
     if email in verification_codes:
         stored_code = verification_codes[email]["code"]
@@ -188,7 +193,7 @@ def verify():
 
         print(datetime.now() , expiration_time)
 
-        if datetime.now() < expiration_time and int(user_code.strip()) == stored_code:
+        if not cancel and datetime.now() < expiration_time and int(user_code.strip()) == stored_code:
             del verification_codes[email]  # Remove the used verification code
 
             return jsonify({"success": True})

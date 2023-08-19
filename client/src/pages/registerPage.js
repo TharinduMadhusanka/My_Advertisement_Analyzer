@@ -7,6 +7,9 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
+
+import VerificationDialog from "./VerificationDialog";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -14,7 +17,15 @@ export default function RegisterPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
+  const [verificationOpen, setVerificationOpen] = useState(false);
 
+  const handleVerificationOpen = () => {
+    setVerificationOpen(true);
+  };
+
+  const handleVerificationClose = () => {
+    setVerificationOpen(false);
+  };
 
   const showVerificationPopup = () => {
     const verificationCode = window.prompt("Enter verification code:");
@@ -28,6 +39,7 @@ export default function RegisterPage() {
           console.log(response);
           if (response.data.success) {
             alert("Registration successful!");
+
             navigate("/login");
           } else {
             alert("Verification code is incorrect or expired.");
@@ -39,7 +51,6 @@ export default function RegisterPage() {
     }
   };
 
-  
   const handleRegister = () => {
     if (email === "" || password === "") {
       alert("Please fill all the fields");
@@ -53,7 +64,8 @@ export default function RegisterPage() {
       })
       .then(function (response) {
         console.log(response);
-        showVerificationPopup();
+        // showVerificationPopup();
+        handleVerificationOpen();
         // navigate("/");
       })
       .catch(function (error) {
@@ -111,6 +123,14 @@ export default function RegisterPage() {
           </div>
         </Box>
       </div>
+      <VerificationDialog
+        open={verificationOpen}
+        onClose={handleVerificationClose}
+        email={email}
+        onSuccess={() => {
+          navigate("/login");
+        }}
+      />
     </Container>
   );
 }
