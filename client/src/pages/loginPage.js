@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -9,11 +9,28 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
+import { auth, provider } from "../googlesignin/config";
+import { signInWithPopup } from "firebase/auth";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+
+  const [value, setValue] = useState("");
+
+  const handleClick = () => {
+    signInWithPopup(auth, provider).then((data) => {
+      setValue(data.user.email);
+      localStorage.setItem("email", data.user.email); // Setting email in local storage
+      navigate("/");
+    });
+  };
+
+  useEffect(() => {
+    setValue(localStorage.getItem("email"));
+  });
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -28,7 +45,11 @@ export default function LoginPage() {
       })
       .then(function (response) {
         console.log(response);
-        navigate("/");
+        
+        // Doing changes
+        setValue(email);
+        localStorage.setItem("email", email); // Setting email in local storage
+        navigate("/");  // Redirecting to home page
       })
       .catch(function (error) {
         console.log(error, "error");
@@ -102,6 +123,9 @@ export default function LoginPage() {
           </div>
         </Box>
       </form>
+      <div>
+        <button onClick={handleClick}>Signin With Google</button>
+      </div>
     </Container>
   );
 }

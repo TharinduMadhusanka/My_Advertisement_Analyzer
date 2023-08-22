@@ -19,7 +19,9 @@ from datetime import datetime, timedelta
 import random
 
 verification_codes = {}
-want_send_email = False
+
+
+want_send_email = True
 
 app = Flask(__name__)
 

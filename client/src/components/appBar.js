@@ -41,6 +41,11 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const logout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -75,6 +80,7 @@ function ResponsiveAppBar() {
             >
               <MenuIcon />
             </IconButton>
+
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -170,6 +176,9 @@ function ResponsiveAppBar() {
           </Box>
         </Toolbar>
       </Container>
+      <div>
+        <button onClick={logout}>Logout</button>
+      </div>
     </AppBar>
   );
 }

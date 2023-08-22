@@ -1,6 +1,12 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import Home from "./pages/home";
 import About from "./pages/about";
 import Analyze from "./pages/analyze";
@@ -10,21 +16,43 @@ import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import LandingPage from "./pages/landingPage";
 
+function ProtectedRoute({ element }) {
+  const userEmail = localStorage.getItem("email");
+  console.log(userEmail);
+  return userEmail ? element : <Navigate to="/login" />;
+}
+
 function App() {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/analyze" element={<Analyze />} />
-          <Route path="/inputURL" element={<InputURL />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/inputIMGURL" element={<Input_Image_URL />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/landing" element={<LandingPage />} />
 
-          {/* <Route path="*" element={<NoPage />} /> */}
+          <Route path="/" element={<ProtectedRoute element={<Home />} />} />
+          <Route
+            path="/analyze"
+            element={<ProtectedRoute element={<Analyze />} />}
+          />
+          <Route
+            path="/inputURL"
+            element={<ProtectedRoute element={<InputURL />} />}
+          />
+          <Route
+            path="/about"
+            element={<ProtectedRoute element={<About />} />}
+          />
+          <Route
+            path="/inputIMGURL"
+            element={<ProtectedRoute element={<Input_Image_URL />} />}
+          />
+          <Route
+            path="/landing"
+            element={<ProtectedRoute element={<LandingPage />} />}
+          />
+
+          {/* <Route path="*" element={<LoginPage />} /> */}
         </Routes>
       </div>
     </Router>
