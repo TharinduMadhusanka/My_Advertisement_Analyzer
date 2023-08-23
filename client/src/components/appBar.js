@@ -131,6 +131,7 @@ function ResponsiveAppBar() {
           >
             HOME
           </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
@@ -144,7 +145,14 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
-
+          <div>
+            <Button
+              onClick={logout}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              Logout
+            </Button>
+          </div>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -176,9 +184,6 @@ function ResponsiveAppBar() {
           </Box>
         </Toolbar>
       </Container>
-      <div>
-        <button onClick={logout}>Logout</button>
-      </div>
     </AppBar>
   );
 }

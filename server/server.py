@@ -232,5 +232,13 @@ def login_user():
     })
 
 
+@app.route('/get-data', methods=['GET'])
+def get_data():
+    collection = db_mongo.data  # Change to your collection name
+    
+    data = list(collection.find({}, {'_id': False}))
+
+    return jsonify(data)
+
 if __name__ == "__main__":
     app.run(debug=True)

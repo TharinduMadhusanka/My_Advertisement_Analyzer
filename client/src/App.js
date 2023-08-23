@@ -15,6 +15,7 @@ import Input_Image_URL from "./pages/inputIMGURL";
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import LandingPage from "./pages/landingPage";
+import LineChartExample from "./pages/charts";
 
 function ProtectedRoute({ element }) {
   const userEmail = localStorage.getItem("email");
@@ -28,7 +29,9 @@ function App() {
       <div>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} /> 
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/charts" element={<LineChartExample />} />
 
           <Route path="/" element={<ProtectedRoute element={<Home />} />} />
           <Route
@@ -51,7 +54,6 @@ function App() {
             path="/landing"
             element={<ProtectedRoute element={<LandingPage />} />}
           />
-
           {/* <Route path="*" element={<LoginPage />} /> */}
         </Routes>
       </div>

@@ -4,6 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import InputURL from "../pages/inputURL";
 import Input_Image_URL from "../pages/inputIMGURL";
+import LineChartExample from "../pages/charts";
 
 export default function CenteredTabs() {
   const [value, setValue] = React.useState(0);
@@ -17,7 +18,7 @@ export default function CenteredTabs() {
       <Tabs value={value} onChange={handleChange} centered>
         <Tab label="Input_URL" />
         <Tab label="Item Two" />
-        <Tab label="Item Three" />
+        <Tab label="Charts" />
       </Tabs>
 
       {/* Add the content for each tab */}
@@ -35,8 +36,8 @@ export default function CenteredTabs() {
       )}
       {value === 2 && (
         <Box p={3}>
-          <h2>Tab Three Content</h2>
-          <p>This is the content for Tab Three.</p>
+          <h2>Charts</h2>
+          <LineChartExample/>
         </Box>
       )}
     </Box>

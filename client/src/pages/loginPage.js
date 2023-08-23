@@ -12,6 +12,8 @@ import Box from "@mui/material/Box";
 import { auth, provider } from "../googlesignin/config";
 import { signInWithPopup } from "firebase/auth";
 
+import GoogleButton from "react-google-button";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,11 +47,11 @@ export default function LoginPage() {
       })
       .then(function (response) {
         console.log(response);
-        
+
         // Doing changes
         setValue(email);
         localStorage.setItem("email", email); // Setting email in local storage
-        navigate("/");  // Redirecting to home page
+        navigate("/"); // Redirecting to home page
       })
       .catch(function (error) {
         console.log(error, "error");
@@ -124,7 +126,8 @@ export default function LoginPage() {
         </Box>
       </form>
       <div>
-        <button onClick={handleClick}>Signin With Google</button>
+        <p>________or login with Google________ </p>
+        <GoogleButton onClick={handleClick} />
       </div>
     </Container>
   );
