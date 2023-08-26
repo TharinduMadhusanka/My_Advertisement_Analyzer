@@ -1,5 +1,4 @@
 import os
-# from database import add_to_db
 from flask import Flask, request, jsonify, render_template
 from nlp.webScraper import extract_article_info
 from nlp.imagetotext import run_ocr, ocr_image_url
@@ -20,7 +19,6 @@ import random
 
 verification_codes = {}
 
-
 want_send_email = True
 
 app = Flask(__name__)
@@ -28,14 +26,7 @@ app = Flask(__name__)
 # app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
 # mongo = PyMongo(app)
 
-# # Define the upload folder
-# UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
-# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# -----------------------------------------------------------------------
-# original code
-# Configurations
 app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
 app.config["UPLOAD_FOLDER"] = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "tmp")
@@ -49,14 +40,13 @@ CORS(app, supports_credentials=True)
 mongo = MongoClient(app.config["MONGO_URI"])
 db_mongo = mongo.myDatabase
 
-# ----------------------------------------------------------------
 
-
+# ___________________________Just for testing_______________________________________________________
 @app.route("/members")
 def members():
     return jsonify({"members": ["Anthony", "Jason", "Karl"]})
 
-
+# _______________________________Get advertisement URL_____________________________________________
 @app.route('/sendurl', methods=['POST'])
 def receive_url_from_frontend():
     data = request.get_json()
@@ -80,7 +70,7 @@ def receive_url_from_frontend():
 
     return jsonify({'results': results})
 
-
+# __________________________________Show on map_______________________________________________________
 @app.route("/map")
 def map_view(geocoded_addresses):
     print("this func is called==============================================")
@@ -100,7 +90,7 @@ def map_view(geocoded_addresses):
     else:
         return "No addresses found."
 
-
+# _______________________Get image URL_______________________________________________________
 @app.route('/sendIMGurl', methods=['POST'])
 def receive_IMG_url_from_frontend():
     data = request.get_json()
@@ -113,19 +103,31 @@ def receive_IMG_url_from_frontend():
     return jsonify({'results': results})
 
 
+# _______________________Upload Image_______________________________________________________
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 @app.route('/upload', methods=['POST'])
 def upload_image():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+    print("upload image is called")
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image part'})
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+    image = request.files['image']
 
-    results = run_ocr(file)
-    return jsonify({'results': results})
+    if image.filename == '':
+        # set a name for the image
+        image.filename = 'image.jpg'
+        return jsonify({'error': 'No name but saved as image.jpg'})
+        # return jsonify({'error': 'No selected image'})
 
+    filename = secure_filename(image.filename)
+    image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return jsonify({'message': 'Image uploaded successfully'})
 
+# _______________________Upload PDF_______________________________________________________
 @app.route('/upload_pdf', methods=['POST'])
 def upload_pdf():
     if 'file' not in request.files:
@@ -146,9 +148,7 @@ def upload_pdf():
         return jsonify({"error": "Error processing PDF"}), 500
 
 
-# User Authentication_______________________________________________________________________________________
-
-
+# _____________________User Authentication____________________________________________________
 @app.route("/signup", methods=["POST"])
 def signup():
     email = request.json["email"]
@@ -231,7 +231,7 @@ def login_user():
         "email": user["email"]
     })
 
-
+# _____________________get data from database for charts____________________________________________________
 @app.route('/get-data', methods=['GET'])
 def get_data():
     collection = db_mongo.data  # Change to your collection name

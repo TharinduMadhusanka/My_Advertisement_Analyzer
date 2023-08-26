@@ -16,6 +16,8 @@ import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import LandingPage from "./pages/landingPage";
 import LineChartExample from "./pages/charts";
+import ImageUploader from "./pages/inputImage";
+import Camera from "./pages/camera";
 
 function ProtectedRoute({ element }) {
   const userEmail = localStorage.getItem("email");
@@ -29,9 +31,11 @@ function App() {
       <div>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} /> 
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/charts" element={<LineChartExample />} />
+          <Route path="/inputimage" element={<ImageUploader />} />
+          <Route path="/camera" element={<Camera />} />
 
           <Route path="/" element={<ProtectedRoute element={<Home />} />} />
           <Route
