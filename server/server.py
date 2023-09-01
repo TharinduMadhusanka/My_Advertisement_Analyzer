@@ -13,13 +13,13 @@ from flask_cors import CORS
 from pymongo import MongoClient
 
 
-from sendmail import sendMail
+from sendmail.sendmail import sendMail
 from datetime import datetime, timedelta
 import random
 
-verification_codes = {}
 
-want_send_email = True
+
+want_send_email = False
 
 app = Flask(__name__)
 
@@ -102,7 +102,6 @@ def receive_IMG_url_from_frontend():
     # Return the results as a JSON response
     return jsonify({'results': results})
 
-
 # _______________________Upload Image_______________________________________________________
 from werkzeug.utils import secure_filename
 
@@ -149,6 +148,10 @@ def upload_pdf():
 
 
 # _____________________User Authentication____________________________________________________
+
+verification_codes = {}
+pending_registrations = {}
+
 @app.route("/signup", methods=["POST"])
 def signup():
     email = request.json["email"]
@@ -164,22 +167,29 @@ def signup():
 
     verification_code = random.randint(100000, 999999)  # generate_random_code()  # Generate a verification code
     expiration_time = datetime.now() + timedelta(minutes=1)
-    verification_codes[email] = {
-        "code": verification_code, "expiration_time": expiration_time}
+    # verification_codes[email] = {
+    #     "code": verification_code, "expiration_time": expiration_time}
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    pending_registrations[email] = {
+        "code": verification_code,
+        "expiration_time": expiration_time,
+        "password": hashed_password,
+    }
 
     print("verification code: ", verification_code)
 
-    if (want_send_email):
-        sendMail(email, verification_code)
+    # if (want_send_email):
+    #     sendMail(email, verification_code)
 
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = {"email": email, "password": hashed_password}
-    db_mongo.users.insert_one(new_user)
+    # hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    # new_user = {"email": email, "password": hashed_password}
+    # db_mongo.users.insert_one(new_user)
 
-    return jsonify({
-        "email": new_user["email"]
-    })
-
+    # return jsonify({
+    #     "email": new_user["email"]
+    # })
+    return jsonify({"message": "Verification code sent."})
 
 @app.route("/verify", methods=["POST"])
 def verify():
@@ -188,27 +198,25 @@ def verify():
     cancel = request.json.get("cancel", False)  # Check for the cancel flag
 
 
-    if email in verification_codes:
-        stored_code = verification_codes[email]["code"]
-        expiration_time = verification_codes[email]["expiration_time"]
-
-
-        print(datetime.now() , expiration_time)
+    if email in pending_registrations:
+        stored_code = pending_registrations[email]["code"]
+        expiration_time = pending_registrations[email]["expiration_time"]
 
         if not cancel and datetime.now() < expiration_time and int(user_code.strip()) == stored_code:
-            del verification_codes[email]  # Remove the used verification code
-
+            user_data = pending_registrations[email]
+            new_user = {"email": email, "password": user_data["password"]}
+            db_mongo.users.insert_one(new_user)   
+            del pending_registrations[email]
+            print("Registration successful")
             return jsonify({"success": True})
         else:
-            # detete the user from the database
-            del verification_codes[email]
-            db_mongo.users.delete_one({"email": email})
+            del pending_registrations[email]
+            print("Registration failed")
             return jsonify({"success": False})
     else:
-        del verification_codes[email]
-        # detete the user from the database
-        db_mongo.users.delete_one({"email": email})
-        return jsonify({"success": False})
+        print("Registration failed")
+        return jsonify({"success": False})   
+
 
 
 @app.route("/login", methods=["POST"])

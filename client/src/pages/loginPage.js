@@ -14,6 +14,13 @@ import { signInWithPopup } from "firebase/auth";
 
 import GoogleButton from "react-google-button";
 
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +28,12 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const [value, setValue] = useState("");
+
+  const [openforgot, setOpenforgot] = useState(false);
+
+  const toggleDialogforgot = () => {
+    setOpenforgot(!openforgot);
+  };
 
   const handleClick = () => {
     signInWithPopup(auth, provider).then((data) => {
@@ -111,9 +124,24 @@ export default function LoginPage() {
             </Button>
             <Typography variant="body2" mt={2}>
               <div>
-                <a href="#!" className="text-body">
+                <a href="#!" className="text-body" onClick={toggleDialogforgot}>
                   Forgot password?
                 </a>
+                <Dialog open={openforgot} onClose={toggleDialogforgot}>
+                  <DialogTitle>Forgot Password</DialogTitle>
+                  <DialogContent>
+                    <p>Enter your email to reset your password.</p>
+                    {/* Add your input fields or any other content */}
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={toggleDialogforgot} color="primary">
+                      Cancel
+                    </Button>
+                    <Button onClick={toggleDialogforgot} color="primary">
+                      Submit
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </div>
               <div>
                 Don't have an account?{" "}
